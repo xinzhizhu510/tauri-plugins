@@ -48,9 +48,13 @@ jobs:
       - name: Create and push tags
         run: |
           # Get list of packages and their versions
+          tags_created=()
+          
           for package_json in packages/*/package.json; do
-            # Skip example-app as it's private
-            if [[ "$package_json" == *"example-app"* ]]; then
+            # Skip private packages by checking the private field
+            is_private=$(node -p "require('./$package_json').private || false")
+            if [[ "$is_private" == "true" ]]; then
+              echo "Skipping private package: $package_json"
               continue
             fi
             
@@ -67,9 +71,16 @@ jobs:
             else
               echo "Creating tag: $tag_name"
               git tag -a "$tag_name" -m "Release $package_name version $version"
+              tags_created+=("$tag_name")
             fi
           done
           
-          # Push all tags
-          echo "Pushing tags to remote..."
-          git push --tags
+          # Push only newly created tags
+          if [ ${#tags_created[@]} -gt 0 ]; then
+            echo "Pushing newly created tags: ${tags_created[*]}"
+            for tag in "${tags_created[@]}"; do
+              git push origin "refs/tags/$tag"
+            done
+          else
+            echo "No new tags to push"
+          fi
