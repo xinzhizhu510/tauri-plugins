@@ -11,12 +11,14 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history and tags
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,3 +44,32 @@ jobs:
           npx lerna publish from-package --yes --no-verify-access
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create and push tags
+        run: |
+          # Get list of packages and their versions
+          for package_json in packages/*/package.json; do
+            # Skip example-app as it's private
+            if [[ "$package_json" == *"example-app"* ]]; then
+              continue
+            fi
+            
+            # Extract package name and version
+            package_name=$(node -p "require('./$package_json').name")
+            version=$(node -p "require('./$package_json').version")
+            
+            # Remove @xinzhizhu510/ scope from package name for tag
+            tag_name="${package_name#@xinzhizhu510/}@${version}"
+            
+            # Check if tag already exists
+            if git rev-parse "$tag_name" >/dev/null 2>&1; then
+              echo "Tag $tag_name already exists, skipping..."
+            else
+              echo "Creating tag: $tag_name"
+              git tag -a "$tag_name" -m "Release $package_name version $version"
+            fi
+          done
+          
+          # Push all tags
+          echo "Pushing tags to remote..."
+          git push --tags
