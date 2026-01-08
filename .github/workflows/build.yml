@@ -27,7 +27,7 @@ jobs:
       
       - name: Build packages
         run: |
-          npx lerna run build --stream --ignore @xinzhizhu510/tauri-plugin-example-app
+          npx lerna run build --stream --ignore-changes @xinzhizhu510/tauri-plugin-example-app
       
       - name: Check for build artifacts
         run: |
