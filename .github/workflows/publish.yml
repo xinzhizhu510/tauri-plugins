@@ -62,8 +62,15 @@ jobs:
             package_name=$(node -p "require('./$package_json').name")
             version=$(node -p "require('./$package_json').version")
             
-            # Remove @xinzhizhu510/ scope from package name for tag
-            tag_name="${package_name#@xinzhizhu510/}@${version}"
+            # Extract short name (remove scope if present)
+            if [[ "$package_name" == @* ]]; then
+              # Remove scope (everything before the last /)
+              short_name="${package_name##*/}"
+            else
+              short_name="$package_name"
+            fi
+            
+            tag_name="${short_name}@${version}"
             
             # Check if tag already exists
             if git rev-parse "$tag_name" >/dev/null 2>&1; then
@@ -79,7 +86,7 @@ jobs:
           if [ ${#tags_created[@]} -gt 0 ]; then
             echo "Pushing newly created tags: ${tags_created[*]}"
             for tag in "${tags_created[@]}"; do
-              git push origin "refs/tags/$tag"
+              git push origin "$tag"
             done
           else
             echo "No new tags to push"
