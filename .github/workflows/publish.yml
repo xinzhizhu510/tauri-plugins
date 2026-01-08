@@ -1,0 +1,44 @@
+name: Build and Publish to GitHub Packages
+
+on:
+  push:
+    branches:
+      - main
+      - release
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@xinzhizhu510'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build packages
+        run: |
+          npx lerna run build --stream --ignore @xinzhizhu510/tauri-plugin-example-app
+      
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+      
+      - name: Publish packages
+        run: |
+          npx lerna publish from-package --yes --no-verify-access --ignore @xinzhizhu510/tauri-plugin-example-app
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
