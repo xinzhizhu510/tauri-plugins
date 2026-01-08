@@ -52,15 +52,20 @@ jobs:
           
           for package_json in packages/*/package.json; do
             # Skip private packages by checking the private field
-            is_private=$(node -p "require('./$package_json').private || false")
+            is_private=$(node -p "require('./$package_json').private || false" 2>/dev/null || echo "false")
             if [[ "$is_private" == "true" ]]; then
               echo "Skipping private package: $package_json"
               continue
             fi
             
-            # Extract package name and version
-            package_name=$(node -p "require('./$package_json').name")
-            version=$(node -p "require('./$package_json').version")
+            # Extract package name and version with error handling
+            package_name=$(node -p "require('./$package_json').name" 2>/dev/null)
+            version=$(node -p "require('./$package_json').version" 2>/dev/null)
+            
+            if [[ -z "$package_name" ]] || [[ -z "$version" ]]; then
+              echo "Warning: Failed to extract name or version from $package_json, skipping..."
+              continue
+            fi
             
             # Extract short name (remove scope if present)
             if [[ "$package_name" == @* ]]; then
@@ -77,8 +82,12 @@ jobs:
               echo "Tag $tag_name already exists, skipping..."
             else
               echo "Creating tag: $tag_name"
-              git tag -a "$tag_name" -m "Release $package_name version $version"
-              tags_created+=("$tag_name")
+              if git tag -a "$tag_name" -m "Release $package_name version $version"; then
+                tags_created+=("$tag_name")
+                echo "✓ Successfully created tag: $tag_name"
+              else
+                echo "✗ Failed to create tag: $tag_name"
+              fi
             fi
           done
           
@@ -86,7 +95,11 @@ jobs:
           if [ ${#tags_created[@]} -gt 0 ]; then
             echo "Pushing newly created tags: ${tags_created[*]}"
             for tag in "${tags_created[@]}"; do
-              git push origin "$tag"
+              if git push origin "$tag"; then
+                echo "✓ Successfully pushed tag: $tag"
+              else
+                echo "✗ Failed to push tag: $tag"
+              fi
             done
           else
             echo "No new tags to push"
