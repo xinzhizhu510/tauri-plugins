@@ -52,7 +52,8 @@ jobs:
           
           for package_json in packages/*/package.json; do
             # Skip private packages by checking the private field
-            is_private=$(node -p "require('./$package_json').private || false" 2>/dev/null || echo "false")
+            # Handle undefined, null, and error cases by defaulting to false
+            is_private=$(node -p "try { const pkg = require('./$package_json'); pkg.private === true ? 'true' : 'false' } catch(e) { 'false' }" 2>/dev/null || echo "false")
             if [[ "$is_private" == "true" ]]; then
               echo "Skipping private package: $package_json"
               continue
