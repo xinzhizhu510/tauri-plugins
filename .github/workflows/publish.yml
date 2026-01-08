@@ -30,7 +30,7 @@ jobs:
       
       - name: Build packages
         run: |
-          npx lerna run build --stream --ignore @xinzhizhu510/tauri-plugin-example-app
+          npx lerna run build --stream --ignore-changes @xinzhizhu510/tauri-plugin-example-app
       
       - name: Configure Git
         run: |
@@ -39,6 +39,6 @@ jobs:
       
       - name: Publish packages
         run: |
-          npx lerna publish from-package --yes --no-verify-access --ignore @xinzhizhu510/tauri-plugin-example-app
+          npx lerna publish from-package --yes --no-verify-access --ignore-changes @xinzhizhu510/tauri-plugin-example-app
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
