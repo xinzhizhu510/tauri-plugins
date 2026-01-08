@@ -1,0 +1,35 @@
+name: Build Packages
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+      - release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build packages
+        run: |
+          npx lerna run build --stream --ignore @xinzhizhu510/tauri-plugin-example-app
+      
+      - name: Check for build artifacts
+        run: |
+          echo "Checking for build artifacts..."
+          find packages -name "build" -type d -exec sh -c 'echo "Found build directory: {}"; ls -la {}' \;

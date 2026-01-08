@@ -1,5 +1,5 @@
 {
-  "name": "@inkibra/tauri-plugin-map-display",
+  "name": "@xinzhizhu510/tauri-plugin-map-display",
   "version": "0.2.3",
   "author": "You",
   "description": "",
@@ -16,11 +16,11 @@
     "@tauri-apps/api": "^2.1.1"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org",
+    "registry": "https://npm.pkg.github.com",
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/inkibra/tauri-plugins.git"
+    "url": "https://github.com/xinzhizhu510/tauri-plugins.git"
   }
 }

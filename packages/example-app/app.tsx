@@ -3,13 +3,13 @@ import { invoke } from '@tauri-apps/api/core';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { attachConsole } from '@tauri-apps/plugin-log';
-import { showContextMenu } from '@inkibra/tauri-plugin-context-menu';
-import { showMap } from '@inkibra/tauri-plugin-map-display';
-import { impactFeedback } from '@inkibra/tauri-plugin-haptic-feedback';
-import { requestPermissions, checkPermissions, watchPosition, getCurrentPosition } from '@inkibra/tauri-plugin-geolocation';
-import { purchaseProduct, restorePurchases, fetchProducts } from '@inkibra/tauri-plugin-iap';
-import { authenticate } from '@inkibra/tauri-plugin-auth';
-import { checkRegistrationStatus, registerForRemoteNotifications, requestPermissions as requestNotificationsPermissions, checkPermissions as checkNotificationsPermissions, watchNotifications } from '@inkibra/tauri-plugin-notifications';
+import { showContextMenu } from '@xinzhizhu510/tauri-plugin-context-menu';
+import { showMap } from '@xinzhizhu510/tauri-plugin-map-display';
+import { impactFeedback } from '@xinzhizhu510/tauri-plugin-haptic-feedback';
+import { requestPermissions, checkPermissions, watchPosition, getCurrentPosition } from '@xinzhizhu510/tauri-plugin-geolocation';
+import { purchaseProduct, restorePurchases, fetchProducts } from '@xinzhizhu510/tauri-plugin-iap';
+import { authenticate } from '@xinzhizhu510/tauri-plugin-auth';
+import { checkRegistrationStatus, registerForRemoteNotifications, requestPermissions as requestNotificationsPermissions, checkPermissions as checkNotificationsPermissions, watchNotifications } from '@xinzhizhu510/tauri-plugin-notifications';
 
 function render() {
   const outlet = document.getElementById('inkibra-tauri-plugin-testbed-app-outlet');
